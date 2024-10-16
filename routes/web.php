@@ -18,3 +18,4 @@ Route::post('/visitantes', [VisitanteController::class, 'store'])->name('visitan
 // Ruta para buscar un visitante existente
 Route::post('/visitantes/buscar', [VisitanteController::class, 'buscar'])->name('visitantes.buscar');  // Asegúrate de que el método buscar también exista en el controlador
 
+//fabian suarez
