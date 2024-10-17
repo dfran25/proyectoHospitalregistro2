@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('identificacion')->unique();
             $table->text('foto'); // Ruta de la imagen del visitante
-            $table->unsignedBigInteger('habitacion_id'); // Llave foránea a la tabla habitaciones
+            $table->unsignedBigInteger('habitacion_id'); // Llave foránea a la tabla habitacions
             $table->timestamps();
 
-            // Relación con la tabla habitaciones
+            // Relación con la tabla habitacions (cuidado con el nombre)
             $table->foreign('habitacion_id')->references('id')->on('habitaciones')->onDelete('cascade');
         });
     }
@@ -32,3 +32,4 @@ return new class extends Migration
         Schema::dropIfExists('visitantes');
     }
 };
+

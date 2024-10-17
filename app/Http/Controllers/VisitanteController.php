@@ -23,6 +23,8 @@ class VisitanteController extends Controller
         return view('visitantes.create', compact('habitaciones'));
     }
 
+    
+
     // Método para almacenar el nuevo visitante
     public function store(Request $request)
     {

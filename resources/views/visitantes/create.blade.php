@@ -42,16 +42,18 @@
                 <label for="foto" class="form-label">Foto:</label>
                 <input type="file" class="form-control" name="foto" accept="image/*" required>
             </div>
-    
-            <div class="mb-3">
-                <label for="habitacion_id" class="form-label">Habitación:</label>
-                <select class="form-select" name="habitacion_id" required>
-                    <option value="">Seleccione una habitación</option>
-                    @foreach ($habitaciones as $habitacion)
+            
+
+            <div class="form-group">
+                <label for="habitacion">Habitación:</label>
+                <select name="habitacion_id" class="form-control" required>
+                    <option value="">Seleccionar Habitación</option>
+                    @foreach($habitaciones as $habitacion)
                         <option value="{{ $habitacion->id }}">{{ $habitacion->numero_habitacion }}</option>
                     @endforeach
                 </select>
             </div>
+            
     
             <button type="submit" class="btn btn-primary">Registrar Visitante</button>
         </form>
