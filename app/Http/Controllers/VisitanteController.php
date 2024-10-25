@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Visitante;
 use App\Models\Habitacion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+
+
 
 class VisitanteController extends Controller
 {
@@ -23,31 +27,6 @@ class VisitanteController extends Controller
         return view('visitantes.create', compact('habitaciones'));
     }
 
-    
-
-    // Método para almacenar el nuevo visitante
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'identificacion' => 'required|string|max:255',
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'habitacion_id' => 'required|exists:habitacions,id',
-        ]);
-
-        // Guardar la foto en el almacenamiento
-        $fotoPath = $request->file('foto')->store('fotos', 'public');
-
-        // Crear el nuevo visitante
-        Visitante::create([
-            'nombre' => $request->nombre,
-            'identificacion' => $request->identificacion,
-            'foto' => $fotoPath,
-            'habitacion_id' => $request->habitacion_id,
-        ]);
-
-        return redirect()->route('visitantes.create')->with('success', 'Visitante registrado exitosamente.');
-    }
 
     // Método para buscar un visitante
     public function buscar(Request $request)
@@ -72,6 +51,34 @@ class VisitanteController extends Controller
         return view('visitantes.detalle', compact('visitante'));
     }
 
+    public function store(Request $request)
+{
+    $validatedData = $request->validate([
+        'nombre' => 'required|string|max:255',
+        'identificacion' => 'required|string|max:255',
+        'foto' => 'required',
+        'habitacion_id' => 'required|exists:habitaciones,id',
+    ]);
+
+    // Decodificar la imagen base64
+    $fotoBase64 = $request->input('foto');
+    $foto = str_replace('data:image/png;base64,', '', $fotoBase64);
+    $foto = str_replace(' ', '+', $foto);
+    $fotoNombre = 'foto_' . time() . '.png';
+    
+    // Guardar la imagen en el servidor (opcional)
+    Storage::disk('public')->put($fotoNombre, base64_decode($foto));
+
+    // Crear el visitante
+    Visitante::create([
+        'nombre' => $validatedData['nombre'],
+        'identificacion' => $validatedData['identificacion'],
+        'foto' => $fotoNombre, // Guardamos el nombre del archivo en la base de datos
+        'habitacion_id' => $validatedData['habitacion_id'],
+    ]);
+
+    return redirect()->route('visitantes.index')->with('success', 'Visitante registrado con éxito.');
+}
     // Otros métodos...
 }
 

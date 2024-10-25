@@ -6,30 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('visitantes', function (Blueprint $table) {
-            $table->id();
+            $table->id(); // Automatically creates an unsigned big integer 'id' column
             $table->string('nombre');
-            $table->string('identificacion')->unique();
-            $table->text('foto'); // Ruta de la imagen del visitante
-            $table->unsignedBigInteger('habitacion_id'); // Llave foránea a la tabla habitacions
+            $table->string('identificacion')->unique(); // Unique identification
+            $table->text('foto'); // Path to the visitor's photo
+            $table->unsignedBigInteger('habitacion_id'); // Foreign key to habitaciones table
             $table->timestamps();
 
-            // Relación con la tabla habitacions (cuidado con el nombre)
+            // Foreign key relationship
             $table->foreign('habitacion_id')->references('id')->on('habitaciones')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('visitantes');
     }
 };
-

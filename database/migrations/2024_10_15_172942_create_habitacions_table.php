@@ -6,21 +6,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('habitaciones', function (Blueprint $table) {
-            $table->id(); // ID único de la habitación
-            $table->string('numero_habitacion')->unique(); // Número único de la habitación
+            $table->id(); // Automatically creates an unsigned big integer 'id' column
+            $table->string('numero_habitacion')->unique(); // Unique room number
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('habitaciones');

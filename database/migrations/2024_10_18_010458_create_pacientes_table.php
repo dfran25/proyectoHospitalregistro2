@@ -6,26 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('pacientes', function (Blueprint $table) {
-            $table->id('id_paciente'); // ID del paciente
-            $table->string('documento')->unique(); // Documento único del paciente
-            $table->string('nombre'); // Nombre del paciente
-            $table->unsignedBigInteger('id_habitacion'); // Llave foránea hacia la tabla habitaciones
+            $table->id(); // Automatically creates an unsigned big integer 'id' column
+            $table->string('documento')->unique(); // Unique document for the patient
+            $table->string('nombre'); // Patient's name
+            $table->unsignedBigInteger('id_habitacion'); // Foreign key to habitaciones table
             $table->timestamps();
 
-            // Relación con la tabla habitaciones
-            $table->foreign('id_habitacion')->references('id_habitacion')->on('habitaciones')->onDelete('cascade');
+            // Foreign key relationship
+            $table->foreign('id_habitacion')->references('id')->on('habitaciones')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('pacientes');
