@@ -1,61 +1,27 @@
-<!DOCTYPE html>
-<html lang="es">
-    @extends('layouts.app')
+@extends('layouts.app')
 
-    @section('title', 'Registro de Visitantes')
+@section('title', 'Registrar Nuevo Visitante')
 
-    @section('content')
-    <div class="container mt-4">
-        <h1 class="mb-4">Registrar Visitante</h1>
+@section('content')
+<div class="container mt-5">
+    <div class="card shadow-lg p-4" style="background-color: #2E2E4E; color: #FFFFFF;">
+        <h2 class="text-center mb-4">Registrar Nuevo Visitante</h2>
 
-        <!-- Mostrar mensajes de éxito o errores -->
-        @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <!-- Formulario de registro -->
-        <form action="{{ route('visitantes.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('visitantes.store') }}" method="POST">
             @csrf
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre:</label>
-                <input type="text" class="form-control" name="nombre" required>
+            <div class="form-group mb-3">
+                <label for="nombre">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
             </div>
 
-            <div class="mb-3">
-                <label for="identificacion" class="form-label">Identificación:</label>
-                <input type="text" class="form-control" name="identificacion" required>
+            <div class="form-group mb-3">
+                <label for="identificacion">Identificación</label>
+                <input type="text" class="form-control" id="identificacion" name="identificacion" required>
             </div>
 
-            <!-- Captura de foto con cámara web -->
-            <div class="mb-3">
-                <label for="foto" class="form-label">Foto:</label>
-                <div>
-                    <video id="video" width="320" height="240" autoplay></video>
-                    <canvas id="canvas" style="display:none;"></canvas>
-                </div>
-                <button type="button" id="capture" class="btn btn-secondary">Tomar Foto</button>
-                <input type="hidden" name="foto" id="foto" required>
-                <div id="photoPreview" style="display:none; margin-top: 10px;">
-                    <p>Foto Capturada:</p>
-                    <img id="photo" src="" alt="Foto Capturada">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="habitacion">Habitación:</label>
-                <select name="habitacion_id" class="form-control" required>
+            <div class="form-group mb-3">
+                <label for="habitacion_id">Habitación</label>
+                <select class="form-control" id="habitacion_id" name="habitacion_id" required>
                     <option value="">Seleccionar Habitación</option>
                     @foreach($habitaciones as $habitacion)
                         <option value="{{ $habitacion->id }}">{{ $habitacion->numero_habitacion }}</option>
@@ -63,43 +29,33 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-primary">Registrar Visitante</button>
+            <!-- Captura de Foto -->
+            <div class="form-group mb-3 text-center">
+                <label for="foto" class="form-label">Captura de Foto</label>
+                <div class="d-flex justify-content-center">
+                    <video id="video" width="320" height="240" autoplay class="border rounded"></video>
+                </div>
+                <button type="button" id="capture" class="btn btn-secondary mt-3">Tomar Foto</button>
+                
+                <!-- Canvas oculto -->
+                <canvas id="canvas" style="display: none;"></canvas>
+
+                <input type="hidden" name="foto" id="foto_base64"> <!-- Foto en base64 para enviar -->
+                <div id="photoPreview" class="mt-3" style="display:none;">
+                    <p>Foto Capturada:</p>
+                    <img id="photo" src="" alt="Foto Capturada" class="img-thumbnail">
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-custom" style="background-color: #4CAF50; color: #FFFFFF;">Registrar Visitante</button>
+            </div>
         </form>
     </div>
+</div>
+@endsection
 
-    <script>
-        // Acceder a la cámara web
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const captureButton = document.getElementById('capture');
-        const photoPreview = document.getElementById('photoPreview');
-        const photo = document.getElementById('photo');
-        const fotoInput = document.getElementById('foto');
-
-        // Solicitar acceso a la cámara
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function(stream) {
-                video.srcObject = stream;
-            })
-            .catch(function(err) {
-                console.log("Error al acceder a la cámara: " + err);
-            });
-
-        // Capturar la imagen al hacer clic en el botón
-        captureButton.addEventListener('click', function() {
-            const context = canvas.getContext('2d');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Convertir la imagen a base64
-            const dataURL = canvas.toDataURL('image/png');
-            fotoInput.value = dataURL; // Almacenar la imagen base64 en el input oculto
-
-            // Mostrar la imagen capturada
-            photo.src = dataURL;
-            photoPreview.style.display = 'block';
-        });
-    </script>
-    @endsection
-</html>
+@section('scripts')
+    <!-- Incluye el archivo JavaScript para manejar la captura de foto -->
+    <script src="{{ asset('js/camera.js') }}"></script>
+@endsection

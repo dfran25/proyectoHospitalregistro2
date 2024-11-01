@@ -9,8 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('habitaciones', function (Blueprint $table) {
-            $table->id(); // Automatically creates an unsigned big integer 'id' column
+            $table->id(); // Primary key
             $table->string('numero_habitacion')->unique(); // Unique room number
+            $table->integer('capacidad')->default(1); // Room capacity, default is 1
             $table->timestamps();
         });
     }

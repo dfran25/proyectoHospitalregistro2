@@ -1,0 +1,57 @@
+body {
+    background-color: #1A1A2E;
+    color: #FFFFFF;
+    font-family: Arial, sans-serif;
+}
+
+.welcome-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+.left-content, .right-content {
+    background-color: #2E2E4E;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.left-content {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.right-content {
+    width: 300px;
+    text-align: center;
+}
+
+.right-content img {
+    width: 80px;
+    margin-bottom: 20px;
+}
+
+.btn-custom {
+    background-color: #4CAF50;
+    color: #FFFFFF;
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 0;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.testimonial-text {
+    font-size: 14px;
+    color: #CCCCCC;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: #666666;
+}

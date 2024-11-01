@@ -1,0 +1,45 @@
+/* Estilos generales */
+body {
+    background-color: #1b1e3d;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+.card {
+    background-color: #2e3358;
+    color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary {
+    background-color: #2acfcf;
+    color: #ffffff;
+    border: none;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #1eb1b1;
+}
+
+.text-header {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Estilos específicos de botones */
+.btn-option {
+    background-color: #2acfcf;
+    color: #ffffff;
+    font-weight: bold;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.btn-option:hover {
+    background-color: #1eb1b1;
+}
