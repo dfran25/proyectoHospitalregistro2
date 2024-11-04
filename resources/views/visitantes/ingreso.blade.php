@@ -32,7 +32,7 @@
                         </div>
                     </div>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-custom" style="background-color: #4CAF50; color: #FFFFFF;">Buscar Visitante</button>
+                        <button type="submit" id="search" class="btn btn-custom" style="background-color: #4CAF50; color: #FFFFFF;">Buscar Visitante</button>
                     </div>
                 </form>
             </div>
@@ -47,6 +47,77 @@
 </div>
 @endsection
 
-@section('scripts')
+{{-- @section('scripts')
     <script src="{{ asset('js/camera.js') }}"></script>
 @endsection
+ --}}
+ @section('scripts')
+ <script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const video = document.getElementById('video');
+
+    // Solicitar acceso a la cámara
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+            video.play();
+        })
+        .catch(error => {
+            console.error('Error al acceder a la cámara: ', error);
+            alert('No se pudo acceder a la cámara.');
+        });
+});
+
+document.getElementById('capture').addEventListener('click', function () {
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const photo = document.getElementById('photo');
+    const photoBase64Input = document.getElementById('foto_base64');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const dataURL = canvas.toDataURL('image/jpeg');
+    photo.src = dataURL;
+    photoBase64Input.value = dataURL;
+
+    document.getElementById('photoPreview').style.display = 'block';
+});
+
+document.getElementById('search').addEventListener('click', function (event) {
+    event.preventDefault(); // Evita el envío del formulario HTML tradicional
+
+    const photoBase64Input = document.getElementById('foto_base64').value;
+    if (!photoBase64Input) {
+        alert("Primero debes capturar una foto.");
+        return;
+    }
+
+    // Enviar la imagen al servidor Flask
+    fetch('http://localhost:5000/process_image', {
+        method: 'POST',
+        body: JSON.stringify({ image: photoBase64Input }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Respuesta del servidor:", data);
+        if (data.mensaje) {
+            alert(data.mensaje);
+        } else {
+            alert("Respuesta inesperada del servidor.");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al enviar la imagen al servidor Flask.');
+    });
+});
+ </script>
+@endsection
+
+

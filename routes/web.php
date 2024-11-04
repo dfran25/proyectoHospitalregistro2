@@ -17,3 +17,5 @@ Route::get('/visitantes/{id}', [VisitanteController::class, 'detalle'])->name('v
 Route::post('/visitantes/buscar', [VisitanteController::class, 'buscar'])->name('visitantes.buscar');
 Route::post('/visitantes/buscarPorFoto', [VisitanteController::class, 'buscarPorFoto'])->name('visitantes.buscarPorFoto');
 Route::post('/visitantes/ingreso', [VisitanteController::class, 'registrarIngreso'])->name('visitantes.registrarIngreso');
+
+Route::post('/visitantes/enviar-foto', [VisitanteController::class, 'enviarFotoAFlask'])->name('visitantes.enviarFoto');

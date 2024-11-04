@@ -86,7 +86,7 @@ class VisitanteController extends Controller
     }
 
     // Busca un visitante por foto usando base64
-    public function buscarPorFoto(Request $request)
+    /* public function buscarPorFoto(Request $request)
     {
         $fotoBase64 = $request->input('foto_base64');
         $visitante = Visitante::where('foto', $fotoBase64)->first();
@@ -96,7 +96,81 @@ class VisitanteController extends Controller
         } else {
             return redirect()->route('visitantes.ingreso')->withErrors(['No se encontró el visitante. Puedes registrarlo como nuevo.']);
         }
+    } */
+
+    public function buscarPorFoto(Request $request)
+{
+    // Valida que la foto base64 esté presente en la solicitud
+    $request->validate([
+        'foto_base64' => 'required|string',
+    ]);
+
+    $fotoBase64 = $request->input('foto_base64');
+
+    // URL del servidor Flask
+    $urlFlask = 'http://127.0.0.1:5000/detectar_rostro';
+
+    // Inicializa el cliente HTTP
+    $client = new \GuzzleHttp\Client();
+
+    try {
+        // Envía la foto al servidor Flask
+        $response = $client->post($urlFlask, [
+            'form_params' => [
+                'imagen' => $fotoBase64,
+            ]
+        ]);
+
+        // Decodifica la respuesta JSON de Flask
+        $resultado = json_decode($response->getBody(), true);
+
+        if ($resultado && isset($resultado['reconocido']) && $resultado['reconocido']) {
+            // Si el rostro es reconocido, busca al visitante por su identificación o nombre
+            $visitante = Visitante::where('identificacion', $resultado['identificacion'])->first();
+
+            if ($visitante) {
+                return view('visitantes.detalles', compact('visitante'));
+            } else {
+                return redirect()->route('visitantes.ingreso')->withErrors(['Visitante no encontrado en la base de datos.']);
+            }
+        } else {
+            return redirect()->route('visitantes.ingreso')->withErrors(['No se reconoció ningún rostro.']);
+        }
+
+    } catch (\Exception $e) {
+        return redirect()->route('visitantes.ingreso')->withErrors(['Error al comunicarse con el servidor Flask: ' . $e->getMessage()]);
     }
+}
+
+public function enviarFotoAFlask($pathImagen)
+{
+    $rutaCompleta = storage_path('app/public/' . $pathImagen);
+
+    if (file_exists($rutaCompleta)) {
+        $imagenBase64 = base64_encode(file_get_contents($rutaCompleta));
+
+        // Configuración de la solicitud HTTP
+        $cliente = new \GuzzleHttp\Client();
+        $urlFlask = 'http://localhost:5000/process_image';
+
+        try {
+            $respuesta = $cliente->post($urlFlask, [
+                'json' => [
+                    'image' => $imagenBase64
+                ]
+            ]);
+
+            $resultado = json_decode($respuesta->getBody(), true);
+            return response()->json($resultado);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al enviar la imagen a Flask: ' . $e->getMessage()]);
+        }
+    } else {
+        return response()->json(['error' => 'La imagen no se encontró en el almacenamiento.']);
+    }
+}
+
+
 
     // Registra la hora de entrada de un visitante
     public function registrarIngreso(Request $request)
