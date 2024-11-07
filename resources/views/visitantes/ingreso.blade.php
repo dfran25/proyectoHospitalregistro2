@@ -31,6 +31,15 @@
                             <img id="photo" src="" alt="Foto Capturada" class="img-thumbnail">
                         </div>
                     </div>
+
+                    <!-- Contenedor de Información del Visitante (nuevo) -->
+                    <div id="visitorInfo" style="display: none; margin-top: 20px;">
+                        <h4>Información del Visitante</h4>
+                        <p><strong>Nombre:</strong> <span id="visitorName"></span></p>
+                        <p><strong>Identificación:</strong> <span id="visitorId"></span></p>
+                        <p><strong>Habitación:</strong> <span id="visitorRoom"></span></p>
+                        <p><strong>Hora de Ingreso:</strong> <span id="visitorTime"></span></p>
+                    </div>
                     <div class="text-center">
                         <button type="submit" id="search" class="btn btn-custom" style="background-color: #4CAF50; color: #FFFFFF;">Buscar Visitante</button>
                     </div>
