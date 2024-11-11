@@ -1,40 +1,75 @@
-// Función para enviar la foto al servidor Flask
-function sendPhotoToServer() {
-    const base64Data = fotoInput.value;
-    if (!base64Data) {
-        alert("No hay una foto capturada para enviar.");
-        return;
-    }
+document.addEventListener('DOMContentLoaded', function () {
+    const video = document.getElementById('video');
+    const captureButton = document.getElementById('capture');
+    const searchButton = document.getElementById('search');
+    const photoPreview = document.getElementById('photoPreview');
+    const canvas = document.getElementById('canvas');
+    const photoBase64Input = document.getElementById('foto_base64');
+    const photo = document.getElementById('photo');
 
-    // Enviar la imagen al servidor Flask
-    fetch('http://localhost:5000/process_image', {
-        method: 'POST',
-        body: JSON.stringify({ image: base64Data }),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Respuesta del servidor:", data);
+    // Solicitar acceso a la cámara
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            video.srcObject = stream;
+            video.play();
+        })
+        .catch(error => {
+            console.error('Error al acceder a la cámara: ', error);
+            alert('No se pudo acceder a la cámara.');
+        });
 
-        if (data.mensaje === "Coincidencia encontrada") {
-            // Mostrar la información del visitante en la vista
-            document.getElementById('visitorName').textContent = data.nombre;
-            document.getElementById('visitorId').textContent = data.identificacion;
-            document.getElementById('visitorRoom').textContent = data.habitacion_id;
-            document.getElementById('visitorTime').textContent = data.hora_actual;
+    // Capturar la foto
+    captureButton.addEventListener('click', function () {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Mostrar el contenedor de información
-            document.getElementById('visitorInfo').style.display = 'block';
-        } else {
-            // Si no hay coincidencia, mostrar mensaje y ocultar la información
-            alert(data.mensaje);
-            document.getElementById('visitorInfo').style.display = 'none';
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error al enviar la imagen al servidor Flask.');
+        const dataURL = canvas.toDataURL('image/jpeg');
+        photo.src = dataURL;
+        photoBase64Input.value = dataURL.replace(/^data:image\/(png|jpeg);base64,/, '');
+
+        photoPreview.style.display = 'block';
     });
-}
+
+    // Buscar visitante en la base de datos
+    if (searchButton) {
+        searchButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (!photoBase64Input.value) {
+                alert("Primero debes capturar una foto.");
+                return;
+            }
+
+            // Enviar la imagen al servidor Flask
+            fetch('http://localhost:5000/process_image', {
+                method: 'POST',
+                body: JSON.stringify({ image: photoBase64Input.value }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Respuesta del servidor:", data);
+                if (data.mensaje === "Coincidencia encontrada") {
+                    const urlParams = new URLSearchParams({
+                        nombre: data.nombre,
+                        identificacion: data.identificacion,
+                        habitacion_id: data.habitacion_id,
+                        hora: data.hora_actual
+                    }).toString();
+                    
+                    window.location.href = `/visitantes/ingreso_exitoso?nombre=${encodeURIComponent(data.nombre)}&identificacion=${encodeURIComponent(data.identificacion)}&habitacion_id=${encodeURIComponent(data.habitacion_id)}&hora=${encodeURIComponent(data.hora_actual)}`;
+                }
+                 else {
+                    // Mostrar mensaje si no se encuentra coincidencia y quedarse en la misma página
+                    alert(data.mensaje);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al enviar la imagen al servidor Flask.');
+            });
+        });
+    }
+});

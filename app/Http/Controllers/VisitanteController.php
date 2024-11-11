@@ -100,36 +100,40 @@ class VisitanteController extends Controller
 
     public function buscarPorFoto(Request $request)
 {
-    // Valida que la foto base64 esté presente en la solicitud
     $request->validate([
         'foto_base64' => 'required|string',
     ]);
 
     $fotoBase64 = $request->input('foto_base64');
+    $urlFlask = 'http://127.0.0.1:5000/process_image';
 
-    // URL del servidor Flask
-    $urlFlask = 'http://127.0.0.1:5000/detectar_rostro';
-
-    // Inicializa el cliente HTTP
     $client = new \GuzzleHttp\Client();
 
     try {
-        // Envía la foto al servidor Flask
         $response = $client->post($urlFlask, [
-            'form_params' => [
-                'imagen' => $fotoBase64,
+            'json' => [
+                'image' => $fotoBase64,
             ]
         ]);
 
-        // Decodifica la respuesta JSON de Flask
         $resultado = json_decode($response->getBody(), true);
 
-        if ($resultado && isset($resultado['reconocido']) && $resultado['reconocido']) {
-            // Si el rostro es reconocido, busca al visitante por su identificación o nombre
+        if ($resultado && isset($resultado['mensaje']) && $resultado['mensaje'] === 'Coincidencia encontrada') {
+            // Buscar al visitante en la base de datos usando la identificación de la respuesta de Flask
             $visitante = Visitante::where('identificacion', $resultado['identificacion'])->first();
 
             if ($visitante) {
-                return view('visitantes.detalles', compact('visitante'));
+                // Registrar la hora de entrada en la tabla hora_entrada
+                HoraEntrada::create([
+                    'id_visitante' => $visitante->id,
+                    'id_habitacion' => $resultado['habitacion_id'], // Usamos el ID de la habitación devuelto por Flask
+                    'fecha_entrada' => Carbon::now()->toDateString(),
+                    'hora_entrada' => Carbon::now()->toTimeString(),
+                ]);
+
+                // Redirigir a una nueva vista de "Ingreso Exitoso"
+                return redirect()->route('visitantes.ingresoExitoso', ['id' => $visitante->id])
+                    ->with('success', 'Ingreso registrado con éxito.');
             } else {
                 return redirect()->route('visitantes.ingreso')->withErrors(['Visitante no encontrado en la base de datos.']);
             }
@@ -141,7 +145,6 @@ class VisitanteController extends Controller
         return redirect()->route('visitantes.ingreso')->withErrors(['Error al comunicarse con el servidor Flask: ' . $e->getMessage()]);
     }
 }
-
 public function enviarFotoAFlask($pathImagen)
 {
     $rutaCompleta = storage_path('app/public/' . $pathImagen);
@@ -179,15 +182,29 @@ public function enviarFotoAFlask($pathImagen)
             'id_visitante' => 'required|exists:visitantes,id',
             'id_habitacion' => 'required|exists:habitaciones,id',
         ]);
-
+    
         HoraEntrada::create([
             'id_visitante' => $validatedData['id_visitante'],
             'id_habitacion' => $validatedData['id_habitacion'],
             'fecha_entrada' => Carbon::now()->toDateString(),
             'hora_entrada' => Carbon::now()->toTimeString(),
         ]);
-
-        return redirect()->route('visitantes.index')->with('success', 'Ingreso registrado con éxito.');
+    
+        return response()->json(['success' => true]);
     }
+    
+
+    public function ingresoExitoso(Request $request)
+{
+    // Opcional: puedes capturar los parámetros desde la URL y enviarlos a la vista
+    return view('visitantes.ingreso_exitoso', [
+        'nombre' => $request->query('nombre'),
+        'identificacion' => $request->query('identificacion'),
+        'habitacion_id' => $request->query('habitacion_id'),
+        'hora' => $request->query('hora'),
+    ]);
+}
+
+    
 }
 

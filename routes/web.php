@@ -19,3 +19,10 @@ Route::post('/visitantes/buscarPorFoto', [VisitanteController::class, 'buscarPor
 Route::post('/visitantes/ingreso', [VisitanteController::class, 'registrarIngreso'])->name('visitantes.registrarIngreso');
 
 Route::post('/visitantes/enviar-foto', [VisitanteController::class, 'enviarFotoAFlask'])->name('visitantes.enviarFoto');
+Route::post('/visitantes/guardar-ingreso', [VisitanteController::class, 'guardarIngreso'])->name('visitantes.guardarIngreso');
+
+Route::get('/visitantes/ingreso_exitoso', function () {
+    return view('visitantes.ingreso_exitoso');
+})->name('ingreso_exitoso');
+
+
