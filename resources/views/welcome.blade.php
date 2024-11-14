@@ -71,19 +71,19 @@
 <body>
     <div class="welcome-container">
         <!-- Left Content -->
-        <div class="left-content">
-            <h1>Registro Visitas Hospital UNAB</h1>
-            <p class="testimonial-text">Everything you need to accept to payment and grow your money of manage anywhere on planet</p>
+        <div class="left-content align-items-center">
+            <h1>Registro Visitas Hospital</h1>
+            <p class="testimonial-text">Recuerda el ingreso de alimentos esta prohibido y mirar la camara sin taparse el rostro</p>
             <blockquote class="blockquote">
-                <p class="testimonial-text">Texto introduccion pendiente😌</p>
-                <footer class="blockquote-footer text-white">Diego Lozano</footer>
+                <p class="testimonial-text">Al ingresar al sistema aceptas manejo de HABEAS DATA😌</p>
+                <footer class="blockquote-footer text-white"> BY-Diego Lozano</footer>
             </blockquote>
-            <div class="d-flex justify-content-center mt-3">
-                <img src="https://via.placeholder.com/40" class="rounded-circle mx-1" alt="User">
-                <img src="https://via.placeholder.com/40" class="rounded-circle mx-1" alt="User">
-                <img src="https://via.placeholder.com/40" class="rounded-circle mx-1" alt="User">
-                <img src="https://unab.edu.co/tenga-en-cuenta-el-uso-del-logo-unab-en-su-gestion-diaria/" class="rounded-circle mx-1" alt="User">
+            <div class="d-flex justify-content-center align-items-center mt-3">
+                <img src="{{ asset('images/tabla.png') }}" class="custom-image mx-2" alt="Tabla">
+                <img src="{{ asset('images/camilla.png') }}" class="custom-image mx-2" alt="Camilla">
+                <img src="{{ asset('images/folder.png') }}" class="custom-image mx-2" alt="Folder">
             </div>
+            
         </div>
 
         <!-- Right Content -->
@@ -92,6 +92,8 @@
             <h2 class="mb-4">Bienvenido</h2>
             <a href="{{ route('visitantes.create') }}" class="btn btn-custom">Visitante nuevo</a>
             <a href="{{ route('visitantes.ingreso') }}" class="btn btn-custom">Visitante registrado</a>
+            <a href="{{ route('visitantes.hora_salida') }}" class="btn btn-custom">Registrar Salida</a>
+            <p></p>
             <p class="testimonial-text">By Diego Lozano😌</p>
         </div>
     </div>

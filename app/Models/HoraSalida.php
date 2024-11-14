@@ -8,6 +8,9 @@ class HoraSalida extends Model
 {
     use HasFactory;
 
+    // Nombre de la tabla en la base de datos
+    protected $table = 'hora_salida';
+
     protected $fillable = ['id_visitante', 'id_habitacion', 'fecha_salida', 'hora_salida'];
 
     /**

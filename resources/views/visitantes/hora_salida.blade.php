@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Ingreso de Visitantes')
+@section('title', 'Registro de Salida de Visitantes')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('content')
 <div class="container mt-5">
     <div class="card shadow-lg p-4" style="background-color: #2E2E4E; color: #FFFFFF;">
-        <h2 class="text-center mb-4">Ingreso de Visitantes</h2>
+        <h2 class="text-center mb-4">Registro de Salida de Visitantes</h2>
 
         <!-- Captura de Foto para Búsqueda de Visitante Existente -->
         <div class="card mb-4" style="background-color: #1A1A2E;">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Capturar Foto para Búsqueda de Visitante Existente , No usar gafas mirar al frente.</h5>
+                <h5 class="mb-0">Capturar Foto para Registrar Salida, No usar gafas y mirar al frente.</h5>
             </div>
             <div class="card-body">
                 <div class="mb-3 text-center">
@@ -31,16 +31,8 @@
                     </div>
                 </div>
 
-                <!-- Contenedor de Información del Visitante -->
-                <div id="visitorInfo" style="display: none; margin-top: 20px;">
-                    <h4>Información del Visitante</h4>
-                    <p><strong>Nombre:</strong> <span id="visitorName"></span></p>
-                    <p><strong>Identificación:</strong> <span id="visitorId"></span></p>
-                    <p><strong>Habitación:</strong> <span id="visitorRoom"></span></p>
-                    <p><strong>Hora de Ingreso:</strong> <span id="visitorTime"></span></p>
-                </div>
                 <div class="text-center">
-                    <button type="button" id="search" class="btn btn-custom" style="background-color: #4CAF50; color: #FFFFFF;">Buscar Visitante</button>
+                    <button type="button" id="search" class="btn btn-custom" style="background-color: #4CAF50; color: #FFFFFF;">Registrar Salida</button>
                 </div>
             </div>
         </div>
@@ -81,7 +73,7 @@
             photoPreview.style.display = 'block';
         });
 
-        // Buscar visitante en la base de datos
+        // Enviar la foto para verificación
         searchButton.addEventListener('click', function (event) {
             event.preventDefault();
             if (!photoBase64Input.value) {
@@ -89,7 +81,6 @@
                 return;
             }
 
-            // Enviar la imagen al servidor Flask
             fetch('http://localhost:5000/process_image', {
                 method: 'POST',
                 body: JSON.stringify({ image: photoBase64Input.value }),
@@ -99,16 +90,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log("Respuesta del servidor:", data);
                 if (data.mensaje === "Coincidencia encontrada") {
-                    // Construir la URL de redirección usando la ruta de Laravel
-                    const url = new URL("{{ route('visitantes.ingreso_exitoso') }}", window.location.origin);
+                    // Redirigir a salida_exitosa con datos obtenidos de Flask
+                    const url = new URL("{{ route('visitantes.salida_exitosa') }}", window.location.origin);
                     url.searchParams.append("nombre", data.nombre);
                     url.searchParams.append("identificacion", data.identificacion);
                     url.searchParams.append("habitacion_id", data.habitacion_id);
-                    url.searchParams.append("hora", data.hora_actual);
-
-                    // Redireccionar a la página de ingreso exitoso
+                    url.searchParams.append("hora_actual", new Date().toLocaleTimeString('en-GB'));
                     window.location.href = url;
                 } else {
                     alert(data.mensaje);
@@ -122,3 +110,4 @@
     });
 </script>
 @endsection
+

@@ -7,13 +7,14 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2e3358;">
         <a class="navbar-brand" href="{{ route('welcome') }}">
             <img src="{{ asset('images/logo-hospital.png') }}" alt="Hospital Logo" width="40" height="40">
-            Proyecto Hospital
+            Proyecto Hospital-HOME
         </a>
     </nav>
     
